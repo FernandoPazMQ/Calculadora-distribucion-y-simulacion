@@ -1,6 +1,6 @@
 # game_of_life_app.py
 import tkinter as tk
-from tkinter import ttk, font
+from tkinter import font
 import threading
 import time
 import numpy as np
@@ -13,23 +13,22 @@ from game_of_life_2d import GameOfLife2D
 from game_of_life_1d import GameOfLife1D
 
 
+BG_COLOR = "#f0f5ff"
+PLOT_BG = "#e6eeff"
+
+
 class GameOfLifeApp:
     def __init__(self, root):
         self.root = root
         root.title("🧫 Juego de la Vida - Autómatas Celulares")
         root.geometry("1050x680")
-        root.configure(bg="#f8f9fa")
+        root.configure(bg=BG_COLOR)
 
-        # Fuente
         self.base_font = font.Font(family="Segoe UI", size=10)
         self.title_font = font.Font(family="Segoe UI", size=11, weight="bold")
 
         # Notebook
-        style = ttk.Style()
-        style.configure("TNotebook", background="#f8f9fa")
-        style.configure("TNotebook.Tab", padding=[12, 6], font=("Segoe UI", 10))
-
-        self.nb = ttk.Notebook(root)
+        self.nb = tk.Frame(root, bg=BG_COLOR)
         self.nb.pack(fill='both', expand=True, padx=15, pady=15)
 
         self._build_2d_tab()
@@ -62,25 +61,22 @@ class GameOfLifeApp:
                         font=self.base_font, relief="flat", cursor="hand2",
                         height=2, width=width)
         btn.pack(fill='x', padx=15, pady=6)
-        # Hover effect
         btn.bind("<Enter>", lambda e: btn.config(bg=self._darken(bg)))
         btn.bind("<Leave>", lambda e: btn.config(bg=bg))
         return btn
 
     def _darken(self, hex_color, factor=0.85):
-        """Oscurece un color HEX para hover."""
         hex_color = hex_color.lstrip('#')
         r, g, b = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
         r, g, b = int(r * factor), int(g * factor), int(b * factor)
         return f"#{r:02x}{g:02x}{b:02x}"
 
-    # ========== 2D ==========
     def _build_2d_tab(self):
-        tab = tk.Frame(self.nb, bg="#f8f9fa")
-        self.nb.add(tab, text=' Juego de la Vida 2D ')
+        tab = tk.Frame(self.nb, bg=BG_COLOR)
+        tab.pack(fill='both', expand=True)
 
         left = self._create_control_panel(tab, "Configuración 2D")
-        right = tk.Frame(tab, bg="#f8f9fa")
+        right = tk.Frame(tab, bg=BG_COLOR)
         right.pack(side='right', fill='both', expand=True)
 
         self.g2_rows = tk.IntVar(value=50)
@@ -99,9 +95,9 @@ class GameOfLifeApp:
         self._styled_button(left, "Ejecutar / Parar", self._g2_toggle, "#2ecc71")
         self._styled_button(left, "Limpiar", self._g2_clear, "#e63946")
 
-        fig = Figure(figsize=(6, 6), facecolor="#f8f9fa")
+        fig = Figure(figsize=(6, 6), facecolor=BG_COLOR)
         self.g2_ax = fig.add_subplot(111)
-        self.g2_ax.set_facecolor("#f0f2f5")
+        self.g2_ax.set_facecolor(PLOT_BG)
         self.g2_canvas = FigureCanvasTkAgg(fig, master=right)
         self.g2_canvas.get_tk_widget().pack(fill='both', expand=True, padx=5, pady=5)
 
@@ -149,13 +145,12 @@ class GameOfLifeApp:
             self.g2.grid = np.zeros_like(self.g2.grid)
             self._g2_draw()
 
-    # ========== 1D ==========
     def _build_1d_tab(self):
-        tab = tk.Frame(self.nb, bg="#f8f9fa")
-        self.nb.add(tab, text=' Autómata Celular 1D ')
+        tab = tk.Frame(self.nb, bg=BG_COLOR)
+        tab.pack(fill='both', expand=True)
 
         left = self._create_control_panel(tab, "Configuración 1D")
-        right = tk.Frame(tab, bg="#f8f9fa")
+        right = tk.Frame(tab, bg=BG_COLOR)
         right.pack(side='right', fill='both', expand=True)
 
         self.g1_len = tk.IntVar(value=300)
@@ -170,9 +165,9 @@ class GameOfLifeApp:
         self._styled_button(left, "Siguiente paso", self._g1_step, "#6c757d")
         self._styled_button(left, "Ejecutar 200 pasos", self._g1_run, "#2ecc71")
 
-        fig = Figure(figsize=(8, 5), facecolor="#f8f9fa")
+        fig = Figure(figsize=(8, 5), facecolor=BG_COLOR)
         self.g1_ax = fig.add_subplot(111)
-        self.g1_ax.set_facecolor("#f0f2f5")
+        self.g1_ax.set_facecolor(PLOT_BG)
         self.g1_canvas = FigureCanvasTkAgg(fig, master=right)
         self.g1_canvas.get_tk_widget().pack(fill='both', expand=True, padx=5, pady=5)
 
